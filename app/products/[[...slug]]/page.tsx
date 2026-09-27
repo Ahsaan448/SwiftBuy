@@ -1,6 +1,11 @@
 import Link from "next/link";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Product } from "@/context/Context";
+import allProductsData from "@/data/products.json";
+import allCategoriesData from "@/data/categories.json";
+
+const allProducts = allProductsData as Product[];
+const allCategories = allCategoriesData as string[];
 
 export default async function ProductsPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
@@ -9,53 +14,15 @@ export default async function ProductsPage({ params }: { params: Promise<{ slug?
 
   let prodetail: Product | null = null;
   if (proId) {
-    try {
-      const proResponse = await fetch(`https://fakestoreapi.com/products/${proId}`);
-      if (proResponse.ok) {
-        prodetail = await proResponse.json();
-      }
-    } catch (e) {
-      console.error("Failed to fetch product details", e);
-    }
+    prodetail = allProducts.find((p) => p.id.toString() === proId) || null;
   }
 
-  const fetchdata = proCategory && proCategory !== "categories"
-    ? `https://fakestoreapi.com/products/category/${proCategory}`
-    : "https://fakestoreapi.com/products";
-
-  let fetchError = null;
-  let products: Product[] = [];
-  try {
-    const response = await fetch(fetchdata, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-      }
-    });
-    if (response.ok) {
-      products = await response.json();
-    } else {
-      fetchError = `API Error: ${response.status} ${response.statusText}`;
-    }
-  } catch (e: any) {
-    fetchError = e.message || "Unknown error";
-    console.error("Failed to fetch products", e);
+  let products: Product[] = allProducts;
+  if (proCategory && proCategory !== "categories") {
+    products = allProducts.filter((p) => p.category === proCategory);
   }
 
-  let showCat: string[] = [];
-  try {
-    const productcategory = await fetch("https://fakestoreapi.com/products/categories", {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-      }
-    });
-    if (productcategory.ok) {
-      showCat = await productcategory.json();
-    }
-  } catch (e) {
-    console.error("Failed to fetch categories", e);
-  }
+  let showCat: string[] = allCategories;
   if (prodetail) {
     return (
       <div className="max-w-5xl mx-auto p-6 text-gray-800">
@@ -100,14 +67,6 @@ export default async function ProductsPage({ params }: { params: Promise<{ slug?
               </div>
             </Link>
           ))}
-        </div>
-      )}
-
-      {fetchError && (
-        <div className="bg-red-50 text-red-600 p-6 rounded-xl border border-red-200 mb-8 font-mono text-sm">
-          <strong>Error loading products from FakeStore API:</strong><br />
-          {fetchError}<br />
-          <span className="text-gray-500 mt-2 block">If you are seeing this on Vercel, the FakeStore API might be blocking requests from Vercel IPs or returning a Cloudflare challenge page.</span>
         </div>
       )}
 

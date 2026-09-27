@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Context from "@/context/Context";
 
 export const metadata: Metadata = {
-  title: "New-Next | E-Commerce",
+  title: "SwiftBuy",
   description: "Modern E-Commerce built with Next.js",
 };
 export default function RootLayout({

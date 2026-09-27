@@ -6,16 +6,42 @@ export default async function ProductsPage({ params }: { params: Promise<{ slug?
   const { slug } = await params;
   const proCategory = slug?.[0];
   const proId = slug?.[1];
-  const pro = proId ? `https://fakestoreapi.com/products/${proId}` : "";
-  const proResponse = pro ? await fetch(pro) : null;
-  const prodetail: Product = proResponse ? await proResponse.json() : null;
+
+  let prodetail: Product | null = null;
+  if (proId) {
+    try {
+      const proResponse = await fetch(`https://fakestoreapi.com/products/${proId}`);
+      if (proResponse.ok) {
+        prodetail = await proResponse.json();
+      }
+    } catch (e) {
+      console.error("Failed to fetch product details", e);
+    }
+  }
+
   const fetchdata = proCategory && proCategory !== "categories"
     ? `https://fakestoreapi.com/products/category/${proCategory}`
     : "https://fakestoreapi.com/products";
-  const response = await fetch(fetchdata);
-  const products: Product[] = await response.json();
-  const productcategory = await fetch("https://fakestoreapi.com/products/categories");
-  const showCat = await productcategory.json();
+
+  let products: Product[] = [];
+  try {
+    const response = await fetch(fetchdata);
+    if (response.ok) {
+      products = await response.json();
+    }
+  } catch (e) {
+    console.error("Failed to fetch products", e);
+  }
+
+  let showCat: string[] = [];
+  try {
+    const productcategory = await fetch("https://fakestoreapi.com/products/categories");
+    if (productcategory.ok) {
+      showCat = await productcategory.json();
+    }
+  } catch (e) {
+    console.error("Failed to fetch categories", e);
+  }
   if (prodetail) {
     return (
       <div className="max-w-5xl mx-auto p-6 text-gray-800">

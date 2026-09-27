@@ -23,19 +23,33 @@ export default async function ProductsPage({ params }: { params: Promise<{ slug?
     ? `https://fakestoreapi.com/products/category/${proCategory}`
     : "https://fakestoreapi.com/products";
 
+  let fetchError = null;
   let products: Product[] = [];
   try {
-    const response = await fetch(fetchdata);
+    const response = await fetch(fetchdata, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+      }
+    });
     if (response.ok) {
       products = await response.json();
+    } else {
+      fetchError = `API Error: ${response.status} ${response.statusText}`;
     }
-  } catch (e) {
+  } catch (e: any) {
+    fetchError = e.message || "Unknown error";
     console.error("Failed to fetch products", e);
   }
 
   let showCat: string[] = [];
   try {
-    const productcategory = await fetch("https://fakestoreapi.com/products/categories");
+    const productcategory = await fetch("https://fakestoreapi.com/products/categories", {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+      }
+    });
     if (productcategory.ok) {
       showCat = await productcategory.json();
     }
@@ -86,6 +100,14 @@ export default async function ProductsPage({ params }: { params: Promise<{ slug?
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {fetchError && (
+        <div className="bg-red-50 text-red-600 p-6 rounded-xl border border-red-200 mb-8 font-mono text-sm">
+          <strong>Error loading products from FakeStore API:</strong><br />
+          {fetchError}<br />
+          <span className="text-gray-500 mt-2 block">If you are seeing this on Vercel, the FakeStore API might be blocking requests from Vercel IPs or returning a Cloudflare challenge page.</span>
         </div>
       )}
 

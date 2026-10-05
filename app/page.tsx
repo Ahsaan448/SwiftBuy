@@ -8,7 +8,7 @@ export default function Home() {
         {/* Hero Section */}
         <div className="space-y-2">
           <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight font-serif">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">NextCommerce</span>
+            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">SwiftBuy</span>
           </h1>
           <p className="text-base md:text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
             A modern e-commerce storefront built with Next.js App Router, Tailwind CSS, and global state management.
